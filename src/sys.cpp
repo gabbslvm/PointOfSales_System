@@ -459,7 +459,7 @@ int main()
             clearInput();
             continue;
         }
-    } // end of do
+    } // end of do-while
     while (mainLoop == 1);
     system("clear");
     cout << "Thank you for using C++offee!\n";
