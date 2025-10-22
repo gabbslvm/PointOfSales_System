@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+// for clearing inputs
 void clearInput()
 {
     cin.clear();
@@ -45,6 +46,7 @@ void receipt(string customerName, string items[],
     cout << "FINAL TOTAL: " << finalTotal << "\n";
 } // end of void function
 
+// thank you message
 void message()
 {
     cout << "Thank you! Visit C++offee again! :)\n";
