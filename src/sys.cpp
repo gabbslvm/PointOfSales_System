@@ -127,8 +127,8 @@ int main()
 
     int totItem = sizeof(items) / sizeof(items[0]); // 12
 
-    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop = 1, choice, add, ns, np, ordering = 1, mChoice, qty,
-        paid;
+    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop = 1, choice, add, ns, np, ordering = 1, mChoice, qty;
+    float paid;
 
     float subtotal = 0, discountAmt = 0, taxAmt = 0, finalTotal = 0;
     char discount;
