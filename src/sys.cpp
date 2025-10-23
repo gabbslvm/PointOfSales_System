@@ -21,35 +21,40 @@ void receipt(string customerName, string items[],
              int totItem, float subtotal, float discountAmt,
              float taxAmt, float finalTotal)
 {
-    cout << "\n--- Receipt ---\n";
+    cout << "\n================================================\n";
+    cout << "\t\t      RECEIPT\n";
+    cout << "================================================\n";
     cout << "Customer: " << customerName << "\n\n";
 
     for (int i = 0; i < totItem; i++)
     {
         if (oq[i] > 0)
         {
-            cout << items[i] << " x " << oq[i] << " = " << oq[i] * price[i] << "\n";
+            cout << "\t" << items[i] << " x " << oq[i] << "\t= " << oq[i] * price[i] << "\n";
         }
     }
 
-    cout << "\nSubtotal: " << subtotal << "\n";
+    cout << "------------------------------------------------\n";
+    cout << "\tSubtotal\t: " << subtotal << "\n";
 
     if (discount == 'Y' || discount == 'y')
     {
-        cout << "Discount: -" << discountAmt << "\n";
+        cout << "\tDiscount\t: -" << discountAmt << "\n";
     }
 
     else if (discount == 'N' || discount == 'n')
     {
-        cout << "VAT (12%): +" << taxAmt << "\n";
+        cout << "\tVAT (12%)\t: +" << taxAmt << "\n";
     }
-    cout << "FINAL TOTAL: " << finalTotal << "\n";
+    cout << "\tFINAL TOTAL\t: " << finalTotal << "\n";
 } // end of void function
 
 // thank you message
 void message()
 {
-    cout << "Thank you! Visit C++offee again! :)\n";
+    cout << "------------------------------------------------\n";
+    cout << "\tThank you! Visit C++offee again! :)\n";
+    cout << "================================================\n";
 }
 
 int main()
