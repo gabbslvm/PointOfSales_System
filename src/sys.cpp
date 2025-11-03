@@ -1,16 +1,19 @@
 #include <iostream>
+#include <vector>
 using namespace std;
 
-// for clearing inputs
+// For clearing inputs
 void clearInput()
 {
     cin.clear();
     cin.ignore(1000, '\n');
 }
 
+// For clearing display
 void sysClear()
 {
-    cout << "\n Press ENTER to continue...\n";
+    cout << "\nPress ENTER to continue...\n";
+    cin.ignore(1000, '\n');
     cin.get();
     system("clear");
 }
@@ -24,7 +27,8 @@ void receipt(string customerName, string items[],
     cout << "\n================================================\n";
     cout << "\t\t      RECEIPT\n";
     cout << "================================================\n";
-    cout << "Customer: " << customerName << "\n\n";
+    cout << "Customer: " << customerName << endl
+         << endl;
 
     for (int i = 0; i < totItem; i++)
     {
@@ -41,11 +45,11 @@ void receipt(string customerName, string items[],
     {
         cout << "\tDiscount\t: -" << discountAmt << "\n";
     }
-
-    else if (discount == 'N' || discount == 'n')
+    else
     {
         cout << "\tVAT (12%)\t: +" << taxAmt << "\n";
     }
+
     cout << "\tFINAL TOTAL\t: " << finalTotal << "\n";
 } // end of void function
 
@@ -57,10 +61,17 @@ void message()
     cout << "================================================\n";
 }
 
+struct OrderHistory
+{
+    string customerName;
+    float total;
+    string summary;
+};
+
 int main()
 {
     // menu
-    string items[12] =
+    string items[16] =
         {
             "Javascript (Javachip)",
             "C#appuccino (Capuccino)",
@@ -73,10 +84,15 @@ int main()
             "Peach Mango Py",
             "Apple Py",
             "Byte-sized Cookie",
-            "RAM-en Noodles"};
+            "RAM-en Noodles",
+            "Carbonara",
+            "Creamy Pesto",
+            "Pizza Boxed",
+            "Pizza Per Piece"
+        }; // end of array
 
     // price of menu
-    float price[12] =
+    float price[16] =
         {
             100, // Javascript (Javachip)
             120, // C#appuccino (Capuccino)
@@ -89,83 +105,61 @@ int main()
             75,  // Peach Mango Py
             75,  // Apple Py
             50,  // Byte-sized Cookie
-            95   // RAM-en Noodles
-        };
+            95,  // RAM-en Noodles
+            150, // Carbonara
+            140, // Creamy Pesto
+            500, // Pizza Boxed
+            65   // Pizza Per Piece
+        }; // end of array
 
     // initial stocks for menu
-    int stocks[12] =
+    int stocks[16] =
         {
-            10, // Javascript (Javachip)
-            10, // C#appuccino (Capuccino)
-            10, // Cout Latte (Caramel)
-            10, // C-trawberry Latte
-            10, // Double Dark Roast
-            10, // Compilepresso (Espresso)
-            10, // JavaBeans Brownies
-            10, // Blueberry Py
-            10, // Peach Mango Py
-            10, // Apple Py
-            10, // Byte-sized Cookie
-            10  // RAM-en Noodles
-        };
+            10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
+        }; // end of array
 
-    int oq[12] =
+    int oq[16] =
         {
-            0, // Javascript (Javachip)
-            0, // C#appuccino (Capuccino)
-            0, // Cout Latte (Caramel)
-            0, // C-trawberry Latte
-            0, // Double Dark Roast
-            0, // Compilepresso (Espresso)
-            0, // JavaBeans Brownies
-            0, // Blueberry Py
-            0, // Peach Mango Py
-            0, // Apple Py
-            0, // Byte-sized Cookie
-            0, // RAM-en Noodles
-        };
+            0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+        }; // end of array
 
-    int totItem = sizeof(items) / sizeof(items[0]); // 12
+    int totItem = sizeof(items) / sizeof(items[0]); // 16
 
-    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop = 1, choice, add, ns, np, ordering = 1, mChoice, qty;
-    float paid;
-
-    float subtotal = 0, discountAmt = 0, taxAmt = 0, finalTotal = 0;
+    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop = 1, choice, add, ns, np, ordering = 1, catChoice, mChoice, qty, rem, remQty;
+    float paid, subtotal = 0, discountAmt = 0, taxAmt = 0, finalTotal = 0;
     char discount;
     bool passOK = false;
-    string customerName;
+    string customerName, summary = " ";
+    vector<OrderHistory> orderHistory;
 
     do
     {
         system("clear");
         cout << "\n===== Welcome to C++offee =====\n";
-        cout << "\n1. Admin\n2. Cashier\nChoice: ";
+        cout << "\n1. Admin\n2. Cashier\n\nChoice: ";
         cin >> user;
+
         if (cin.fail())
         {
             clearInput();
             continue;
         }
 
-        // employee loop (CRUD)
         if (user == 1)
         {
             system("clear");
 
-            empLoop = 1;
-            bool passOK = false;
-            attempts = 0;
             while (attempts < 3)
             {
                 cout << "Enter 4-digit Password: ";
                 cin >> entered;
+
                 if (cin.fail())
                 {
                     clearInput();
                     cout << "Invalid. Password must be 4 digits only.\n";
                     attempts++;
                     cout << "Attempts left: " << 3 - attempts << endl;
-                    clearInput();
                     sysClear();
                     continue;
                 }
@@ -174,11 +168,11 @@ int main()
                 {
                     cout << "Password must be exactly 4 Digits.\n";
                     attempts++;
-                    clearInput();
-                    cin.ignore();
+                    cout << "Attempts left: " << 3 - attempts << endl;
                     sysClear();
                     continue;
                 }
+
                 if (entered == crctPass)
                 {
                     passOK = true;
@@ -190,37 +184,30 @@ int main()
                 {
                     attempts++;
                     cout << "Wrong password. Attempts left: " << 3 - attempts << "\n";
-                    cin.ignore();
-                    cin.get();
                     sysClear();
-                } // end of if-else
-            } // end of while loop for attempts
+                }
+            }
 
             if (!passOK)
             {
-                if (attempts >= 3)
-                {
-                    cout << "Too many wrong attempts. Returning to main menu...\n";
-                }
-                else
-                {
-                    cout << "Access denied. Returning to main menu...\n";
-                }
-                clearInput();
+                cout << "Access denied. Returning to main menu.\n";
                 sysClear();
                 continue;
             }
             else
             {
+                empLoop = 1;
                 while (empLoop == 1)
                 {
                     cout << "\n--- Inventory Management ---\n";
-                    cout << "1. Add Stock\n2. View Stock\n3. Update Stock\n4. Delete All Stock\n5. Change Password\n6. Exit\nChoice: ";
+                    cout << "1. Add Stock\n2. View Stock\n3. Update Stock\n4. Delete All Stock\n5. Change Password\n6. View Order History\n7. Exit\nChoice: ";
                     cin >> choice;
-                    system("clear");
+
                     if (cin.fail())
                     {
                         clearInput();
+                        cout << "Invalid input.\n";
+                        sysClear();
                         continue;
                     }
                     system("clear");
@@ -230,27 +217,17 @@ int main()
                     case 1:
                         for (int i = 0; i < totItem; i++)
                         {
-                            bool crctInput = false;
-                            while (crctInput == false)
-                            {
-                                cout << "Add to " << items[i] << ": ";
-                                cin >> add;
+                            cout << "Add to " << items[i] << ": ";
+                            cin >> add;
 
-                                if (cin.fail())
-                                {
-                                    clearInput();
-                                    cout << "Invalid input. Try again." << endl;
-                                }
-                                else if (add < 0)
-                                {
-                                    cout << "Cannot add negative stock.\n";
-                                }
-                                else
-                                {
-                                    crctInput = true;
-                                    stocks[i] += add;
-                                }
+                            if (cin.fail() || add < 0)
+                            {
+                                clearInput();
+                                cout << "Invalid input. Try again." << endl;
+                                sysClear();
+                                continue;
                             }
+                            stocks[i] += add;
                         }
                         break;
                     case 2:
@@ -263,27 +240,17 @@ int main()
                     case 3:
                         for (int i = 0; i < totItem; i++)
                         {
-                            bool crctInput = false;
-                            while (crctInput == false)
-                            {
-                                cout << "Set new stock for " << items[i] << ": ";
-                                cin >> ns;
+                            cout << "Set new stock for " << items[i] << ": ";
+                            cin >> ns;
 
-                                if (cin.fail())
-                                {
-                                    clearInput();
-                                    cout << "Invalid input. Try again." << endl;
-                                }
-                                else if (ns < 0)
-                                {
-                                    cout << "Cannot set negative stock.\n";
-                                }
-                                else
-                                {
-                                    crctInput = true;
-                                    stocks[i] = ns;
-                                }
+                            if (cin.fail() || ns < 0)
+                            {
+                                clearInput();
+                                cout << "Invalid input. Try again." << endl;
+                                sysClear();
+                                continue;
                             }
+                            stocks[i] = ns;
                         }
                         break;
                     case 4:
@@ -307,165 +274,303 @@ int main()
                         {
                             crctPass = np;
                             cout << "Password change success.\n";
-                            clearInput();
                             sysClear();
                             continue;
                         }
                         break;
                     case 6:
+                        if (orderHistory.empty())
+                        {
+                            cout << "No order history yet.\n";
+                        }
+                        else
+                        {
+                            cout << "\n=== ORDER HISTORY ===\n";
+                            for (int i = 0; i < (int)orderHistory.size(); i++)
+                            {
+                                cout << "\nCustomer: " << orderHistory[i].customerName;
+                                cout << "\nItems:\n"
+                                     << orderHistory[i].summary;
+                                cout << "Total Paid: PHP " << orderHistory[i].total;
+                                cout << "\n-----------------------------\n";
+                            }
+                        }
+                        break;
+                    case 7:
                         empLoop = 0;
-                        break;
+                        continue;
                     default:
-                        cout << "Invalid choice.\n";
+                        cout << "Invalid input.\n";
                         break;
-                    } // end of switch
-                    continue;
-                } // end of while
-            } // end of else
-        } // end of if user == 1
+                    }
+                    sysClear();
+                }
+            }
+        }
         else if (user == 2)
         {
             system("clear");
-            cin.ignore(); // clear newline before getline
+            cin.ignore();
             cout << "Enter Customer Name: ";
             getline(cin, customerName);
 
-            subtotal = 0;
-            for (int i = 0; i < totItem; i++)
-            {
-                oq[i] = 0;
-            }
-
             ordering = 1;
-
             while (ordering == 1)
             {
                 system("clear");
-                cout << "\n--- MENU ---\n";
+                cout << "\n--- Menu Categories ---\n";
+                cout << "1) Drinks\n2) Dessert\n3) Food\n4) Remove Item\n5) View Cart\n6) Proceed Payment\n7) Back/Exit\nChoice: ";
+                cin >> catChoice;
 
-                for (int i = 0; i < totItem; i++)
-                {
-                    cout << i + 1 << ") " << items[i] << " = PHP " << price[i] << " [" << stocks[i] << " left]\n";
-                }
-                cout << "13) Proceed to Payment\nChoice: ";
-                cin >> mChoice;
                 if (cin.fail())
                 {
                     clearInput();
-                    cout << "Invalid input. Try again." << endl;
+                    cout << "Invalid input\n";
+                    sysClear();
                     continue;
                 }
 
-                if (mChoice >= 1 && mChoice <= 12)
+                int start = 0, end = 0;
+
+                switch (catChoice)
                 {
-                    cout << "How many? ";
-                    cin >> qty;
+                case 1:
+                    sysClear();
+                    start = 0;
+                    end = 5;
+                    break; // Drinks
+                case 2:
+                    sysClear();
+                    start = 5;
+                    end = 12;
+                    break; // Food
+                case 3:
+                    sysClear();
+                    start = 12;
+                    end = 14;
+                    break; // Desserts
+                case 4:
+                    break; // Remove Item
+                case 5:
+                    break; // View Cart
+                case 6:
+                    break; // Proceed Payment
+                case 7:
+                    ordering = 0;
+                    continue;
+                default:
+                    cout << "Invalid input\n";
+                    sysClear();
+                    continue;
+                }
+
+                if (catChoice >= 1 && catChoice <= 3)
+                {
+                    while (1)
+                    {
+                        system("clear");
+                        for (int i = start; i < end; i++)
+                        {
+                            cout << i + 1 << ") " << items[i] << " = PHP " << price[i] << " [" << stocks[i] << " left] (In Cart: " << oq[i] << ")\n";
+                        }
+                        cout << end + 1 << ") Back to Categories\nChoice: ";
+                        int itemChoice;
+                        cin >> itemChoice;
+
+                        if (cin.fail())
+                        {
+                            clearInput();
+                            cout << "Invalid input\n";
+                            sysClear();
+                            continue;
+                        }
+
+                        if (itemChoice == end + 1)
+                        {
+                            break;
+                        }
+                        else if (itemChoice >= start + 1 && itemChoice <= end)
+                        {
+                            cout << "Quantity: ";
+                            cin >> qty;
+
+                            if (cin.fail() || qty <= 0)
+                            {
+                                clearInput();
+                                cout << "Invalid quantity\n";
+                                sysClear();
+                                continue;
+                            }
+
+                            if (qty > stocks[itemChoice - 1])
+                            {
+                                cout << "Not enough stock\n";
+                                sysClear();
+                                continue;
+                            }
+                            else
+                            {
+                                stocks[itemChoice - 1] -= qty;
+                                oq[itemChoice - 1] += qty;
+                            }
+                        }
+                        else
+                        {
+                            cout << "Invalid choice\n";
+                            sysClear();
+                            continue;
+                        }
+                    }
+                }
+                else if (catChoice == 4) // Remove Item
+                {
+                    system("clear");
+                    cout << "\n--- Remove Item ---\n";
+                    for (int i = 0; i < totItem; i++)
+                    {
+                        cout << i + 1 << ") " << items[i] << " In Cart: " << oq[i] << "\n";
+                    }
+                    cout << totItem + 1 << ") Back\nChoice: ";
+                    int remChoice;
+                    cin >> remChoice;
+
                     if (cin.fail())
                     {
                         clearInput();
-                        cout << "Invalid input. Try again." << endl;
+                        cout << "Invalid input\n";
+                        sysClear();
                         continue;
                     }
-                    if (qty <= 0)
+
+                    if (remChoice >= 1 && remChoice <= totItem)
                     {
-                        cout << "Enter a positive quantity.\n";
+                        cout << "Quantity to remove: ";
+                        cin >> remQty;
+
+                        if (cin.fail() || remQty <= 0)
+                        {
+                            clearInput();
+                            cout << "Invalid quantity\n";
+                            sysClear();
+                            continue;
+                        }
+
+                        if (remQty > oq[remChoice - 1])
+                        {
+                            cout << "You don't have that many in cart\n";
+                            sysClear();
+                            continue;
+                        }
+                        else
+                        {
+                            oq[remChoice - 1] -= remQty;
+                            stocks[remChoice - 1] += remQty;
+                        }
+                    }
+                }
+                else if (catChoice == 5) // View Cart
+                {
+                    system("clear");
+                    cout << "\n--- Your Cart ---\n";
+                    bool cartIsEmpty = true;
+                    for (int i = 0; i < totItem; i++)
+                    {
+                        if (oq[i] > 0)
+                        {
+                            cout << items[i] << " x " << oq[i] << " = " << oq[i] * price[i] << "\n";
+                            cartIsEmpty = false;
+                        }
+                    }
+
+                    if (cartIsEmpty)
+                    {
+                        cout << "No items in cart.\n";
+                    }
+
+                    sysClear();
+                }
+                else if (catChoice == 6) // Proceed Payment
+                {
+                    subtotal = 0;
+                    for (int i = 0; i < totItem; i++)
+                    {
+                        subtotal += oq[i] * price[i];
+                    }
+
+                    if (subtotal == 0)
+                    {
+                        cout << "No items in cart.\n";
+                        sysClear();
                         continue;
                     }
-                    if (qty <= stocks[mChoice - 1])
+
+                    cout << "Discount? (Y/N): ";
+                    cin >> discount;
+
+                    discountAmt = 0;
+                    taxAmt = 0;
+
+                    if (discount == 'Y' || discount == 'y')
                     {
-                        stocks[mChoice - 1] -= qty;
-                        oq[mChoice - 1] += qty;
-                        cout << "Added.\n";
+                        discountAmt = subtotal * 0.1;
                     }
                     else
                     {
-                        cout << "Not enough stock.\n";
+                        taxAmt = subtotal * 0.12;
                     }
-                } // end of if
 
-                else if (mChoice == 13)
-                {
-                    ordering = 0;
-                }
-                else
-                {
-                    cout << "Invalid menu choice.\n";
-                }
-            } // end of while
+                    finalTotal = subtotal - discountAmt + taxAmt;
 
-            // computation for price
-            for (int i = 0; i < totItem; i++)
-            {
-                subtotal = subtotal + oq[i] * price[i];
-            }
-            if (subtotal > 0)
-            {
-                cout << "Are you Senior/PWD? (Y/N): ";
-                cin >> discount;
-                if (cin.fail())
-                {
-                    clearInput();
-                    discount = 'N';
-                }
+                    receipt(customerName, items, discount, oq, price, totItem, subtotal, discountAmt, taxAmt, finalTotal);
 
-                if (discount == 'Y' || discount == 'y')
-                {
-                    discountAmt = subtotal * 0.20;
-                    taxAmt = 0;
-                    finalTotal = subtotal - discountAmt;
-                }
-                else
-                {
-                    discountAmt = 0;
-                    taxAmt = subtotal * 0.12;
-                    finalTotal = subtotal + taxAmt;
-                }
-
-                receipt(customerName, items, discount, oq, price, totItem, subtotal, discountAmt, taxAmt, finalTotal);
-
-                cout << "Enter payment amount (PHP): ";
-                cin >> paid;
-                if (cin.fail())
-                {
-                    clearInput();
-                    cout << "Invalid input. Try again." << endl;
-                    continue;
-                }
-
-                while (paid < finalTotal)
-                {
-                    cout << "Insufficient payment. Enter again: ";
+                    cout << "Total: PHP " << finalTotal << "\n";
+                    cout << "Amount Paid: ";
                     cin >> paid;
+
+                    double change = paid - finalTotal;
+                    cout << "Change: " << change << "\n";
+                    
                     if (cin.fail())
                     {
                         clearInput();
-                        cout << "Invalid input. Try again." << endl;
+                        cout << "Invalid amount\n";
+                        sysClear();
+                        continue;
                     }
+
+                    if (paid < finalTotal)
+                    {
+                        cout << "Insufficient amount\n";
+                        sysClear();
+                        continue;
+                    }
+
+                    
+                    message();
+
+                    // Store order history
+                    summary = "";
+                    for (int i = 0; i < totItem; i++)
+                    {
+                        if (oq[i] > 0)
+                        {
+                            summary += items[i] + " x " + to_string(oq[i]) + "\n";
+                        }
+                    }
+
+                    orderHistory.push_back({customerName, finalTotal, summary});
+
+                    // Clear cart
+                    for (int i = 0; i < totItem; i++)
+                    {
+                        oq[i] = 0;
+                    }
+
+                    sysClear();
                 }
-
-                float change = paid - finalTotal;
-                cout << "Change: PHP " << change << "\n";
             }
-            else
-            {
-                cout << "No items ordered.\n";
-            }
-            message();
-        } // end of else if
+        }
+    } while (mainLoop == 1);
 
-        else
-        {
-            cout << "Invalid choice.\n";
-        }
-        cout << "\nDo you want to return to main menu? (1-Yes / 0-No): ";
-        cin >> mainLoop;
-        if (cin.fail())
-        {
-            clearInput();
-            continue;
-        }
-    } // end of do-while
-    while (mainLoop == 1);
-    system("clear");
-    cout << "Thank you for using C++offee!\n";
-} // end of int main
+    return 0;
+} // end of main
