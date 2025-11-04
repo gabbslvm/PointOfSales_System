@@ -18,7 +18,7 @@ void sysClear()
     system("clear");
 }
 
-// q for quantity, p for price
+// For receipt
 void receipt(string customerName, string items[],
              char discount, int oq[], float price[],
              int totItem, float subtotal, float discountAmt,
@@ -38,17 +38,21 @@ void receipt(string customerName, string items[],
         }
     }
 
-    cout << "------------------------------------------------\n";
-    cout << "\tSubtotal\t: " << subtotal << "\n";
-
     if (discount == 'Y' || discount == 'y')
     {
         cout << "\tDiscount\t: -" << discountAmt << "\n";
     }
-    else
+    else if (discount == 'N' || discount == 'n')
     {
         cout << "\tVAT (12%)\t: +" << taxAmt << "\n";
     }
+    else
+    {
+        cout << "Invalid input. Please enter Y or N only.\n";
+    }
+
+    cout << "------------------------------------------------\n";
+    cout << "\tSubtotal\t: " << subtotal << "\n";
 
     cout << "\tFINAL TOTAL\t: " << finalTotal << "\n";
 } // end of void function
@@ -78,17 +82,17 @@ int main()
             "Cout Latte (Caramel)",
             "C-trawberry Latte",
             "Double Dark Roast",
-            "Compilepresso (Espresso)",
+            "Compilepresso (Espresso)", // end of drinks 0 - 5
             "JavaBeans Brownies",
             "Blueberry Py",
             "Peach Mango Py",
             "Apple Py",
-            "Byte-sized Cookie",
+            "Byte-sized Cookie", // end of pastries 6 - 10
             "RAM-en Noodles",
             "Carbonara",
             "Creamy Pesto",
             "Pizza Boxed",
-            "Pizza Per Piece"
+            "Pizza Per Piece" // end of foods 11 - 15
         }; // end of array
 
     // price of menu
@@ -118,6 +122,7 @@ int main()
             10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 10
         }; // end of array
 
+    // order quantity
     int oq[16] =
         {
             0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
@@ -125,8 +130,8 @@ int main()
 
     int totItem = sizeof(items) / sizeof(items[0]); // 16
 
-    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop = 1, choice, add, ns, np, ordering = 1, catChoice, mChoice, qty, rem, remQty;
-    float paid, subtotal = 0, discountAmt = 0, taxAmt = 0, finalTotal = 0;
+    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop, choice, add, ns, np, ordering, catChoice, mChoice, qty, rem, remQty, remChoice, start, end, ccLoop;
+    float paid, subtotal = 0, discountAmt, taxAmt, finalTotal = 0, change;
     char discount;
     bool passOK = false;
     string customerName, summary = " ";
@@ -185,6 +190,7 @@ int main()
                     attempts++;
                     cout << "Wrong password. Attempts left: " << 3 - attempts << "\n";
                     sysClear();
+                    continue;
                 }
             }
 
@@ -302,15 +308,14 @@ int main()
                     default:
                         cout << "Invalid input.\n";
                         break;
-                    }
+                    } // end of switch
                     sysClear();
-                }
-            }
-        }
+                } // end of while loop
+            } // end of else
+        } // end of if user
         else if (user == 2)
         {
-            system("clear");
-            cin.ignore();
+            clearInput();
             cout << "Enter Customer Name: ";
             getline(cin, customerName);
 
@@ -330,25 +335,20 @@ int main()
                     continue;
                 }
 
-                int start = 0, end = 0;
-
                 switch (catChoice)
                 {
                 case 1:
                     sysClear();
-                    start = 0;
-                    end = 5;
+                    start = 0, end = 5;
                     break; // Drinks
                 case 2:
                     sysClear();
-                    start = 5;
-                    end = 12;
-                    break; // Food
+                    start = 6, end = 10;
+                    break; // Desserts
                 case 3:
                     sysClear();
-                    start = 12;
-                    end = 14;
-                    break; // Desserts
+                    start = 11, end = 15;
+                    break; // Foods
                 case 4:
                     break; // Remove Item
                 case 5:
@@ -366,14 +366,15 @@ int main()
 
                 if (catChoice >= 1 && catChoice <= 3)
                 {
-                    while (1)
+                    ccLoop = 1;
+                    while (ccLoop == 1)
                     {
                         system("clear");
                         for (int i = start; i < end; i++)
                         {
                             cout << i + 1 << ") " << items[i] << " = PHP " << price[i] << " [" << stocks[i] << " left] (In Cart: " << oq[i] << ")\n";
                         }
-                        cout << end + 1 << ") Back to Categories\nChoice: ";
+                        cout << end + 1 << ") Back to Categories\n\nChoice: ";
                         int itemChoice;
                         cin >> itemChoice;
 
@@ -387,7 +388,7 @@ int main()
 
                         if (itemChoice == end + 1)
                         {
-                            break;
+                            ccLoop = 0;
                         }
                         else if (itemChoice >= start + 1 && itemChoice <= end)
                         {
@@ -430,8 +431,8 @@ int main()
                     {
                         cout << i + 1 << ") " << items[i] << " In Cart: " << oq[i] << "\n";
                     }
+
                     cout << totItem + 1 << ") Back\nChoice: ";
-                    int remChoice;
                     cin >> remChoice;
 
                     if (cin.fail())
@@ -491,6 +492,7 @@ int main()
                 }
                 else if (catChoice == 6) // Proceed Payment
                 {
+
                     subtotal = 0;
                     for (int i = 0; i < totItem; i++)
                     {
@@ -504,19 +506,25 @@ int main()
                         continue;
                     }
 
+                    discountAmt = 0, taxAmt = 0;
+
                     cout << "Discount? (Y/N): ";
                     cin >> discount;
 
-                    discountAmt = 0;
-                    taxAmt = 0;
-
+                    sysClear();
+                    
                     if (discount == 'Y' || discount == 'y')
                     {
-                        discountAmt = subtotal * 0.1;
+                        discountAmt = subtotal * 0.20;
+                    }
+                    else if (discount == 'N' || discount == 'n')
+                    {
+                        taxAmt = subtotal * 0.12;
                     }
                     else
                     {
-                        taxAmt = subtotal * 0.12;
+                        cout << "Invalid input. Please enter Y or N only.\n";
+                        clearInput();
                     }
 
                     finalTotal = subtotal - discountAmt + taxAmt;
@@ -527,25 +535,34 @@ int main()
                     cout << "Amount Paid: ";
                     cin >> paid;
 
-                    double change = paid - finalTotal;
-                    cout << "Change: " << change << "\n";
-                    
-                    if (cin.fail())
+                    bool paidOK = false;
+                    while (!paidOK)
                     {
-                        clearInput();
-                        cout << "Invalid amount\n";
-                        sysClear();
-                        continue;
+                        if (cin.fail())
+                        {
+                            clearInput();
+                            cout << "Invalid amount\n";
+                            continue;
+                        }
+
+                        if (paid < finalTotal)
+                        {
+                            cout << "Insufficient amount\n";
+                            continue;
+                        }
+                        else if (paid == finalTotal)
+                        {
+                            cout << "No Change.\n";
+                            paidOK = true;
+                        }
+                        else
+                        {
+                            change = paid - finalTotal;
+                            cout << "Change: " << change << "\n";
+                            paidOK = true;
+                        }
                     }
 
-                    if (paid < finalTotal)
-                    {
-                        cout << "Insufficient amount\n";
-                        sysClear();
-                        continue;
-                    }
-
-                    
                     message();
 
                     // Store order history
@@ -565,7 +582,7 @@ int main()
                     {
                         oq[i] = 0;
                     }
-
+                    ordering = 0;
                     sysClear();
                 }
             }
