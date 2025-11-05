@@ -130,10 +130,10 @@ int main()
 
     int totItem = sizeof(items) / sizeof(items[0]); // 16
 
-    int mainLoop = 1, user, crctPass = 1234, entered, attempts = 0, empLoop, choice, add, ns, np, ordering, catChoice, mChoice, qty, rem, remQty, remChoice, start, end, ccLoop;
+    int mainLoop = 1, user, crctPass = 1234, entered, attempts, empLoop, choice, add, ns, np, ordering, catChoice, mChoice, qty, rem, remQty, remChoice, start, end, ccLoop;
     float paid, subtotal = 0, discountAmt, taxAmt, finalTotal = 0, change;
     char discount;
-    bool passOK = false;
+    bool passOK;
     string customerName, summary = " ";
     vector<OrderHistory> orderHistory;
 
@@ -154,8 +154,11 @@ int main()
         {
             system("clear");
 
+            attempts = 0;
             while (attempts < 3)
             {
+                passOK = false;
+
                 cout << "Enter 4-digit Password: ";
                 cin >> entered;
 
@@ -194,7 +197,7 @@ int main()
                 }
             }
 
-            if (!passOK)
+            if (passOK == false)
             {
                 cout << "Access denied. Returning to main menu.\n";
                 sysClear();
@@ -315,6 +318,7 @@ int main()
         } // end of if user
         else if (user == 2)
         {
+            system("clear");
             clearInput();
             cout << "Enter Customer Name: ";
             getline(cin, customerName);
@@ -409,6 +413,7 @@ int main()
                                 sysClear();
                                 continue;
                             }
+
                             else
                             {
                                 stocks[itemChoice - 1] -= qty;
@@ -505,26 +510,34 @@ int main()
                         sysClear();
                         continue;
                     }
+                    system("clear");
 
                     discountAmt = 0, taxAmt = 0;
 
-                    cout << "Discount? (Y/N): ";
-                    cin >> discount;
+                    bool validInput = false;
+                    while (!validInput)
+                    {
+                        cout << "Discount? (Y/N): ";
+                        cin >> discount;
 
-                    sysClear();
-                    
-                    if (discount == 'Y' || discount == 'y')
-                    {
-                        discountAmt = subtotal * 0.20;
-                    }
-                    else if (discount == 'N' || discount == 'n')
-                    {
-                        taxAmt = subtotal * 0.12;
-                    }
-                    else
-                    {
-                        cout << "Invalid input. Please enter Y or N only.\n";
-                        clearInput();
+                        if (discount == 'Y' || discount == 'y')
+                        {
+                            discountAmt = subtotal * 0.20;
+                            validInput = true;
+                            sysClear();
+                        }
+                        else if (discount == 'N' || discount == 'n')
+                        {
+                            taxAmt = subtotal * 0.12;
+                            validInput = true;
+                            sysClear();
+                        }
+                        else
+                        {
+                            cout << "Invalid input. Please enter Y or N only.\n";
+                            clearInput();
+                            sysClear();
+                        }
                     }
 
                     finalTotal = subtotal - discountAmt + taxAmt;
@@ -532,12 +545,13 @@ int main()
                     receipt(customerName, items, discount, oq, price, totItem, subtotal, discountAmt, taxAmt, finalTotal);
 
                     cout << "Total: PHP " << finalTotal << "\n";
-                    cout << "Amount Paid: ";
-                    cin >> paid;
 
                     bool paidOK = false;
                     while (!paidOK)
                     {
+                        cout << "Amount Paid: ";
+                        cin >> paid;
+
                         if (cin.fail())
                         {
                             clearInput();
