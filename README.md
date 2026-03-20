@@ -2,17 +2,17 @@
 
 A transaction-based Point-of-Sales (POS) system developed as an academic project using C++.
 
-## 📋 Overview
+## Overview
 
 This console-based POS system demonstrates fundamental programming concepts and transaction management through a command-line interface. Built with C++, it provides essential retail functionality for processing sales transactions.
 
-## 🛠️ Tech Stack
+## Tech Stack
 
 - **Language:** C++
 - **Interface:** Console-based (CLI)
 - **Architecture:** Transaction-based system
 
-## ✨ Features
+## Features
 
 - Transaction processing
 - Sales management
@@ -20,7 +20,7 @@ This console-based POS system demonstrates fundamental programming concepts and 
 - Product inventory handling
 - Receipt generation
 
-## 🎯 Purpose
+## Purpose
 
 Developed as a school project to demonstrate:
 - Object-oriented programming principles
@@ -28,7 +28,7 @@ Developed as a school project to demonstrate:
 - Data structure implementation
 - Console application development
 
-## 🚀 Getting Started
+## Getting Started
 
 1. Clone the repository
 ```bash
@@ -45,9 +45,9 @@ g++ main.cpp -o pos_system
 ./pos_system
 ```
 
-## 📝 Note
+## Note
 
-This is an academic project created for educational purposes at the Technological Institute of the Philippines (T.I.P.).
+This is an academic project created for educational purposes only.
 
 ---
 
