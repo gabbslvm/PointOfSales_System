@@ -48,8 +48,3 @@ g++ main.cpp -o pos_system
 ## Note
 
 This is an academic project created for educational purposes only.
-
----
-
-**Developer:** Jireh Salvame  
-**Institution:** Technological Institute of the Philippines
